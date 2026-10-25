@@ -24,9 +24,17 @@
 lpa2-taller1/
 ├─ src/                   # Código del proyecto
 ├─ tests/
+│  ├─ conftest.py        # Registro de marcadores (slow, integration)
 │  ├─ fixtures/          # Datos de prueba
+│  │  └─ datos_muebles.py
 │  ├─ unit/              # Pruebas unitarias
-│  │  ├─ conftest.py     # Configuración compartida
+│  │  ├─ conftest.py     # Fixtures compartidas
+│  │  ├─ test_main.py
+│  │  ├─ services/
+│  │  │  ├─ test_tienda.py
+│  │  │  └─ test_descuentos.py
+│  │  ├─ ui/
+│  │  │  └─ test_menu.py
 │  │  └─ models/
 │  │     ├─ test_mueble.py
 │  │     ├─ categorias/
@@ -47,6 +55,7 @@ lpa2-taller1/
 │  │     └─ composicion/
 │  │        └─ test_comedor.py
 │  └─ integration/       # Pruebas de integración
+│     └─ test_tienda_integracion.py
 ├─ .coveragerc           # Configuración de cobertura
 └─ pytest.ini            # Configuración de pytest
 ```
@@ -73,11 +82,12 @@ lpa2-taller1/
     cd lpa2-taller1
     ```
 
-- Crear entorno virtual - en Ubuntu utiliza `python3`:
+- Crear entorno virtual (requiere Python 3.10 o superior) - en Ubuntu utiliza `python3`:
 
     ```bash
-    python -m venv venv
-    source venv/bin/activate # Mac/Linux/WSL
+    python -m venv .venv
+    source .venv/bin/activate     # Mac/Linux/WSL
+    .venv\Scripts\activate        # Windows (PowerShell o CMD)
     pip install -r requirements.txt
     ```
 
@@ -314,43 +324,89 @@ class TestTienda:
 
 ## Ejecución de Pruebas
 
+### Antes de Ejecutar
+
+- Activar el entorno virtual (ver [Preparación del Proyecto](#preparación-del-proyecto)).
+- Ejecutar todos los comandos desde la **raíz del proyecto** (`lpa2-taller1/`).
+- No hace falta configurar `PYTHONPATH`: `pytest.ini` ya agrega `.`, `src` y `tests` con la opción `pythonpath`. Si se ejecutan los módulos fuera de pytest, configurarlo manualmente:
+
+    ```bash
+    export PYTHONPATH=.:src        # Mac/Linux/WSL
+    $env:PYTHONPATH = ".;src"      # Windows PowerShell
+    ```
+
+- Las pruebas importan el código igual que `src/main.py`, es decir `from models.concretos.silla import Silla` (sin el prefijo `src.`). Mezclar ambas formas carga dos veces los módulos y hace fallar las comprobaciones con `isinstance`.
+
 ### Comandos Básicos
 
-- Configurar la variable de entorno `PYTHONPATH`:
+- Ejecutar todas las pruebas. Gracias a `addopts` en `pytest.ini`, siempre se ejecutan en modo *verbose* y generan el reporte de cobertura en terminal y en `htmlcov/`:
 
     ```bash
-    export PYTHONPATH=.
+    pytest
     ```
 
-- Ejecutar todas las pruebas, `-v` en modo *verbose*:
+- Ejecutar solo las pruebas unitarias o solo las de integración:
 
     ```bash
-    pytest -v
+    pytest tests/unit
+    pytest tests/integration
     ```
 
-- Ejecutar pruebas con cobertura detallada
+- Ejecutar pruebas específicas (carpeta, archivo, clase o prueba individual):
 
     ```bash
-    pytest --cov=src --cov-report=html
+    pytest tests/unit/models/
+    pytest tests/unit/models/concretos/test_silla.py
+    pytest tests/unit/models/concretos/test_silla.py::TestSilla
+    pytest tests/unit/models/concretos/test_silla.py::TestSilla::test_calcular_precio
     ```
 
-- Ejecutar pruebas específicas
+- Ejecutar pruebas cuyo nombre contenga un texto:
 
     ```bash
-    pytest tests/unit/models/ -v
+    pytest -k "descuento"
     ```
 
-- Ejecutar pruebas y mostrar cobertura en terminal
+- Filtrar por marcadores:
 
     ```bash
-    pytest --cov=src --cov-report=term-missing
+    pytest -m "not slow"        # Omitir las pruebas lentas
+    pytest -m integration       # Solo pruebas de integración
     ```
 
-- Ejecutar pruebas marcadas como rápidas
+- Ejecutar sin medir cobertura (más rápido mientras se desarrolla):
 
     ```bash
-    pytest -m "not slow"
+    pytest --no-cov
     ```
+
+- Detenerse en el primer fallo y mostrar el detalle:
+
+    ```bash
+    pytest -x --tb=long
+    ```
+
+- Abrir el reporte de cobertura HTML:
+
+    ```bash
+    open htmlcov/index.html       # Mac
+    xdg-open htmlcov/index.html   # Linux
+    start htmlcov/index.html      # Windows
+    ```
+
+### Resultado Esperado
+
+- Al final de la salida se muestra la tabla de cobertura por archivo; la ejecución falla si la cobertura total es menor al **80%** (`fail_under` en `.coveragerc`).
+- Algunas pruebas aparecen como **`xfailed`**. Son pruebas de TDD en fase *RED* para funcionalidades pendientes (`obtener_muebles_por_tipo`, `calcular_valor_inventario`, `_contar_tipos_muebles` y `aplicar_descuento_material`). Están marcadas con `@pytest.mark.xfail(strict=True)`, por lo que no rompen la ejecución.
+- Cuando se implemente una de esas funcionalidades, su prueba aparecerá como **`XPASS(strict)`** y fallará: es la señal para quitar el marcador `xfail` (fase *GREEN*).
+
+### Ejecutar la Aplicación
+
+Desde la raíz del proyecto:
+
+```bash
+python src/main.py
+```
 
 ### Marcadores de Pruebas
 
