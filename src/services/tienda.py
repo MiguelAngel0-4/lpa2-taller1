@@ -261,13 +261,7 @@ class TiendaMuebles:
         Returns:
             List[Mueble]: Lista de muebles del tipo especificado
         """
-        # TODO: Implementar filtro por tipo
-        # resultados = []
-        # for mueble in self._inventario:
-        #     if isinstance(mueble, tipo_clase):
-        #         resultados.append(mueble)
-        # return resultados
-        pass
+        return [mueble for mueble in self._inventario if isinstance(mueble, tipo_clase)]
 
     def calcular_valor_inventario(self) -> float:
         """
@@ -276,22 +270,20 @@ class TiendaMuebles:
         Returns:
             float: Valor total de todos los muebles en inventario
         """
-        # TODO: Implementar cálculo de valor total
-        # valor_total = 0
-        # for mueble in self._inventario:
-        #     try:
-        #         valor_total += mueble.calcular_precio()
-        #     except Exception:
-        #         continue  # Saltar muebles con errores
+        valor_total = 0
+        for mueble in self._inventario:
+            try:
+                valor_total += mueble.calcular_precio()
+            except Exception:
+                continue  # Saltar muebles con errores
 
-        # for comedor in self._comedores:
-        #     try:
-        #         valor_total += comedor.calcular_precio_total()
-        #     except Exception:
-        #         continue
+        for comedor in self._comedores:
+            try:
+                valor_total += comedor.calcular_precio_total()
+            except Exception:
+                continue
 
-        # return round(valor_total, 2)
-        pass
+        return round(valor_total, 2)
 
     def aplicar_descuento(self, categoria: str, porcentaje: float) -> str:
         """
@@ -316,6 +308,26 @@ class TiendaMuebles:
         self._descuentos_activos[categoria_clase] = porcentaje / 100
         return (
             f"Descuento del {porcentaje}% aplicado a la categoría '{categoria_clase}'"
+        )
+
+    def aplicar_descuento_material(self, material: str, porcentaje: float) -> str:
+        """
+        Rebaja el precio base de los muebles del inventario de un material.
+
+        Args:
+            material: Material de los muebles a rebajar (case-insensitive)
+            porcentaje: Fracción de descuento (ej: 0.1 para 10%)
+        Returns:
+            str: Mensaje de confirmación o error
+        """
+        if not 0 < porcentaje < 1:
+            return "Error: El porcentaje debe estar entre 0 y 1 (exclusivo)"
+        muebles = self.filtrar_por_material(material)
+        for mueble in muebles:
+            mueble.precio_base = round(mueble.precio_base * (1 - porcentaje), 2)
+        return (
+            f"Descuento del {porcentaje * 100:.0f}% aplicado a {len(muebles)} "
+            f"mueble(s) de material '{material}'"
         )
 
     def realizar_venta(
@@ -370,13 +382,11 @@ class TiendaMuebles:
         Returns:
             Dict[str, int]: Diccionario con el conteo por tipo
         """
-        # TODO: Implementar conteo por tipos
-        # conteo = {}
-        # for mueble in self._inventario:
-        #     tipo = type(mueble).__name__
-        #     conteo[tipo] = conteo.get(tipo, 0) + 1
-        # return conteo
-        pass
+        conteo = {}
+        for mueble in self._inventario:
+            tipo = type(mueble).__name__
+            conteo[tipo] = conteo.get(tipo, 0) + 1
+        return conteo
 
     def generar_reporte_inventario(self) -> str:
         """

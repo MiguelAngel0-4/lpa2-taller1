@@ -397,8 +397,8 @@ class TestTienda:
 ### Resultado Esperado
 
 - Al final de la salida se muestra la tabla de cobertura por archivo; la ejecución falla si la cobertura total es menor al **80%** (`fail_under` en `.coveragerc`).
-- Algunas pruebas aparecen como **`xfailed`**. Son pruebas de TDD en fase *RED* para funcionalidades pendientes (`obtener_muebles_por_tipo`, `calcular_valor_inventario`, `_contar_tipos_muebles` y `aplicar_descuento_material`). Están marcadas con `@pytest.mark.xfail(strict=True)`, por lo que no rompen la ejecución.
-- Cuando se implemente una de esas funcionalidades, su prueba aparecerá como **`XPASS(strict)`** y fallará: es la señal para quitar el marcador `xfail` (fase *GREEN*).
+- Todas las pruebas pasan y no quedan pruebas **`xfailed`**. Las funcionalidades desarrolladas con TDD (`obtener_muebles_por_tipo`, `calcular_valor_inventario`, `_contar_tipos_muebles` y `aplicar_descuento_material`) empezaron en fase *RED* con `@pytest.mark.xfail(strict=True)`. Ya se implementaron y se les quitó el marcador (fase *GREEN*).
+- Para una funcionalidad nueva, conviene repetir el ciclo: escribir la prueba marcada con `xfail(strict=True)`, implementar el código (la prueba aparecerá como **`XPASS(strict)`** y fallará) y quitar el marcador.
 
 ### Ejecutar la Aplicación
 

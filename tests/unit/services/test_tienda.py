@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 from services.tienda import TiendaMuebles
 from models.concretos.silla import Silla
 from models.concretos.mesa import Mesa
+from models.categorias.asientos import Asiento
 
 
 @pytest.fixture
@@ -378,14 +379,9 @@ class TestReporteInventario:
         assert "Valor total del inventario: $0.00" in reporte
 
 
-class TestTiendaPendientesTDD:
-    """
-    TDD - fase RED: estos métodos tienen un TODO en src/services/tienda.py
-    y hoy retornan None. Cuando se implementen, las pruebas pasarán (XPASS)
-    y, al ser strict=True, pytest avisará para quitar el marcador xfail.
-    """
+class TestTiendaObtenerMueblesPorTipo:
+    """TDD - fase GREEN: antes eran pruebas xfail (fase RED)."""
 
-    @pytest.mark.xfail(reason="TDD: obtener_muebles_por_tipo sin implementar", strict=True)
     def test_obtener_muebles_por_tipo(self, tienda_vacia, silla_basica, mesa_comedor):
         tienda_vacia.agregar_mueble(silla_basica)
         tienda_vacia.agregar_mueble(mesa_comedor)
@@ -393,7 +389,23 @@ class TestTiendaPendientesTDD:
         assert tienda_vacia.obtener_muebles_por_tipo(Silla) == [silla_basica]
         assert tienda_vacia.obtener_muebles_por_tipo(Mesa) == [mesa_comedor]
 
-    @pytest.mark.xfail(reason="TDD: calcular_valor_inventario sin implementar", strict=True)
+    def test_incluye_subclases(self, tienda_vacia, silla_basica, sofa_basico, mesa_comedor):
+        tienda_vacia.agregar_mueble(silla_basica)
+        tienda_vacia.agregar_mueble(sofa_basico)
+        tienda_vacia.agregar_mueble(mesa_comedor)
+
+        assert tienda_vacia.obtener_muebles_por_tipo(Asiento) == [silla_basica, sofa_basico]
+
+    def test_tipo_sin_coincidencias(self, tienda_vacia, silla_basica):
+        tienda_vacia.agregar_mueble(silla_basica)
+
+        assert tienda_vacia.obtener_muebles_por_tipo(Mesa) == []
+
+    def test_inventario_vacio(self, tienda_vacia):
+        assert tienda_vacia.obtener_muebles_por_tipo(Silla) == []
+
+
+class TestTiendaCalcularValorInventario:
     def test_calcular_valor_inventario(
         self, tienda_vacia, silla_basica, mesa_comedor, comedor_completo
     ):
@@ -404,10 +416,48 @@ class TestTiendaPendientesTDD:
         # 50 (silla) + 260 (mesa) + 532 (comedor con descuento)
         assert tienda_vacia.calcular_valor_inventario() == pytest.approx(842.0)
 
-    @pytest.mark.xfail(reason="TDD: _contar_tipos_muebles sin implementar", strict=True)
+    def test_inventario_vacio(self, tienda_vacia):
+        assert tienda_vacia.calcular_valor_inventario() == 0
+
+    def test_redondea_a_dos_decimales(self, tienda_vacia, crear_mueble_mock):
+        tienda_vacia.agregar_mueble(crear_mueble_mock(precio=10.005))
+        tienda_vacia.agregar_mueble(crear_mueble_mock(precio=20.001))
+
+        assert tienda_vacia.calcular_valor_inventario() == round(10.005 + 20.001, 2)
+
+    def test_omite_mueble_con_error_de_precio(self, tienda_vacia, crear_mueble_mock):
+        mueble_roto = crear_mueble_mock(precio=100.0)
+        tienda_vacia.agregar_mueble(mueble_roto)
+        tienda_vacia.agregar_mueble(crear_mueble_mock(precio=50.0))
+        mueble_roto.calcular_precio.side_effect = RuntimeError("precio inválido")
+
+        assert tienda_vacia.calcular_valor_inventario() == 50.0
+
+    def test_omite_comedor_con_error_de_precio(self, tienda_vacia, silla_basica):
+        comedor_roto = Mock()
+        comedor_roto.calcular_precio_total.side_effect = RuntimeError("sin mesa")
+        tienda_vacia.agregar_mueble(silla_basica)
+        tienda_vacia.agregar_comedor(comedor_roto)
+
+        assert tienda_vacia.calcular_valor_inventario() == 50.0
+
+
+class TestTiendaContarTiposMuebles:
     def test_contar_tipos_muebles(self, tienda_vacia, silla_basica, mesa_comedor):
         tienda_vacia.agregar_mueble(silla_basica)
         tienda_vacia.agregar_mueble(Silla("Otra", "Metal", "Negro", 80.0))
         tienda_vacia.agregar_mueble(mesa_comedor)
 
         assert tienda_vacia._contar_tipos_muebles() == {"Silla": 2, "Mesa": 1}
+
+    def test_inventario_vacio(self, tienda_vacia):
+        assert tienda_vacia._contar_tipos_muebles() == {}
+
+    def test_coincide_con_estadisticas(self, tienda_vacia, silla_basica, sofa_basico):
+        tienda_vacia.agregar_mueble(silla_basica)
+        tienda_vacia.agregar_mueble(sofa_basico)
+
+        assert (
+            tienda_vacia._contar_tipos_muebles()
+            == tienda_vacia.obtener_estadisticas()["tipos_muebles"]
+        )
