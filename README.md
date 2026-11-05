@@ -1,6 +1,6 @@
 # LPA2 Taller1: Pruebas Unitarias Tienda de Muebles
 
-![commits](https://badgen.net/github/commits/UR-CC/lpa2-taller1?icon=github) 
+![commits](https://badgen.net/github/commits/UR-CC/lpa2-taller1?icon=github)
 ![last_commit](https://img.shields.io/github/last-commit/UR-CC/lpa2-taller1)
 
 ## Objetivos
@@ -120,7 +120,7 @@ Archivo `.coveragerc`:
 ```ini
 [run]
 source = src
-omit = 
+omit =
     */__pycache__/*
     */tests/*
     */venv/*
@@ -148,10 +148,10 @@ fail_under = 80
 def test_nombre_del_test():
     # Arrange: Preparar el escenario
     objeto = Clase(parametro=valor)
-    
+
     # Act: Ejecutar la acción a probar
     resultado = objeto.metodo()
-    
+
     # Assert: Verificar el resultado
     assert resultado == valor_esperado
 ```
@@ -172,17 +172,18 @@ import pytest
 from abc import ABC
 from src.models.mueble import Mueble
 
+
 class TestMueble:
     def test_es_clase_abstracta(self):
         # Verificar que Mueble es abstracta
         with pytest.raises(TypeError):
             mueble = Mueble("Mesa", "Madera", 100.0)
-    
+
     def test_tiene_metodos_abstractos(self):
         # Verificar que tiene métodos abstractos
-        assert hasattr(Mueble, 'calcular_precio')
-        assert hasattr(Mueble, 'obtener_descripcion')
-        
+        assert hasattr(Mueble, "calcular_precio")
+        assert hasattr(Mueble, "obtener_descripcion")
+
         # Verificar que son abstractos
         assert Mueble.calcular_precio.__isabstractmethod__
         assert Mueble.obtener_descripcion.__isabstractmethod__
@@ -196,26 +197,27 @@ class TestMueble:
 import pytest
 from src.models.concretos.silla import Silla
 
+
 class TestSilla:
     @pytest.fixture
     def silla_basica(self):
         return Silla("Silla Básica", "Madera", 50.0, 4, "Madera")
-    
+
     def test_instanciacion_correcta(self, silla_basica):
         # Verificar herencia de atributos
         assert silla_basica.nombre == "Silla Básica"
         assert silla_basica.material == "Madera"
         assert silla_basica.precio_base == 50.0
-        
+
         # Verificar atributos específicos
         assert silla_basica.numero_patas == 4
         assert silla_basica.tipo_madera == "Madera"
-    
+
     def test_calcular_precio(self, silla_basica):
         # Probar polimorfismo
         precio = silla_basica.calcular_precio()
         assert precio == 50.0  # Precio base sin modificaciones
-    
+
     def test_obtener_descripcion(self, silla_basica):
         descripcion = silla_basica.obtener_descripcion()
         assert "Silla Básica" in descripcion
@@ -230,22 +232,23 @@ class TestSilla:
 import pytest
 from src.models.concretos.sofacama import SofaCama
 
+
 class TestSofaCama:
     def test_herencia_multiple(self):
         sofa_cama = SofaCama("Sofá Cama Moderno", "Tela", 500.0, 3, "Queen")
-        
+
         # Verificar atributos de Sofa
         assert sofa_cama.capacidad_personas == 3
-        
+
         # Verificar atributos de Cama
         assert sofa_cama.tamaño_colchon == "Queen"
-        
+
         # Verificar método específico
-        assert hasattr(sofa_cama, 'transformar')
-    
+        assert hasattr(sofa_cama, "transformar")
+
     def test_resolucion_metodos(self):
         sofa_cama = SofaCama("Sofá Cama", "Cuero", 600.0, 2, "Full")
-        
+
         # Verificar que usa el método correcto (MRO)
         precio = sofa_cama.calcular_precio()
         assert precio > 600.0  # Debe incluir recargos de ambas clases
@@ -261,19 +264,20 @@ from src.models.composicion.comedor import Comedor
 from src.models.concretos.mesa import Mesa
 from src.models.concretos.silla import Silla
 
+
 class TestComedor:
     @pytest.fixture
     def comedor_basico(self):
         mesa = Mesa("Mesa Comedor", "Roble", 200.0, "Rectangular", 6)
         sillas = [Silla("Silla Comedor", "Roble", 50.0, 4, "Roble") for _ in range(6)]
         return Comedor("Comedor Familiar", mesa, sillas)
-    
+
     def test_composicion_correcta(self, comedor_basico):
         assert comedor_basico.mesa is not None
         assert len(comedor_basico.sillas) == 6
         assert isinstance(comedor_basico.mesa, Mesa)
         assert all(isinstance(silla, Silla) for silla in comedor_basico.sillas)
-    
+
     def test_calcular_precio_total(self, comedor_basico):
         precio_total = comedor_basico.calcular_precio()
         precio_esperado = 200.0 + (6 * 50.0)  # Mesa + 6 sillas
@@ -290,33 +294,34 @@ from unittest.mock import Mock, patch
 from src.services.tienda import Tienda
 from src.models.concretos.silla import Silla
 
+
 class TestTienda:
     @pytest.fixture
     def tienda_vacia(self):
         return Tienda()
-    
+
     @pytest.fixture
     def silla_mock(self):
         mock_silla = Mock(spec=Silla)
         mock_silla.nombre = "Silla Mock"
         mock_silla.calcular_precio.return_value = 75.0
         return mock_silla
-    
+
     def test_agregar_producto(self, tienda_vacia, silla_mock):
         tienda_vacia.agregar_producto(silla_mock)
         assert len(tienda_vacia.inventario) == 1
         assert tienda_vacia.inventario[0] == silla_mock
-    
+
     def test_vender_producto_existente(self, tienda_vacia, silla_mock):
         tienda_vacia.agregar_producto(silla_mock)
-        
-        with patch('builtins.print') as mock_print:
+
+        with patch("builtins.print") as mock_print:
             resultado = tienda_vacia.vender_producto("Silla Mock")
-            
+
             assert resultado is True
             assert len(tienda_vacia.inventario) == 0
             mock_print.assert_called_once()
-    
+
     def test_vender_producto_inexistente(self, tienda_vacia):
         resultado = tienda_vacia.vender_producto("Producto Inexistente")
         assert resultado is False
@@ -415,13 +420,12 @@ python src/main.py
 ```python
 import pytest
 
+
 def pytest_configure(config):
     config.addinivalue_line(
         "markers", "slow: marks tests as slow (deselect with '-m \"not slow\"')"
     )
-    config.addinivalue_line(
-        "markers", "integration: marks tests as integration tests"
-    )
+    config.addinivalue_line("markers", "integration: marks tests as integration tests")
 ```
 
 **Uso en pruebas:**
@@ -431,6 +435,7 @@ def pytest_configure(config):
 def test_proceso_lento():
     # Esta prueba se puede saltar con pytest -m "not slow"
     pass
+
 
 @pytest.mark.integration
 def test_integracion_completa():
@@ -456,10 +461,10 @@ def test_aplicar_descuento_por_material():
     # RED: Escribir prueba primero
     tienda = Tienda()
     silla = Silla("Silla", "Roble", 100.0, 4, "Roble")
-    
+
     tienda.agregar_producto(silla)
     tienda.aplicar_descuento_material("Roble", 0.1)  # 10% descuento
-    
+
     assert silla.precio_base == 90.0  # Esta prueba fallará inicialmente
 ```
 
@@ -483,6 +488,7 @@ def comedor_completo():
     sillas = [Silla("Silla Roble", "Roble", 80.0, 4, "Roble") for _ in range(8)]
     return Comedor("Comedor Grande", mesa, sillas)
 
+
 def test_comedor_precio(comedor_completo):
     precio = comedor_completo.calcular_precio()
     assert precio == 300.0 + (8 * 80.0)
@@ -491,11 +497,14 @@ def test_comedor_precio(comedor_completo):
 **Parámetros para múltiples escenarios:**
 
 ```python
-@pytest.mark.parametrize("material,precio_base,esperado", [
-    ("Madera", 100.0, 100.0),
-    ("Roble", 150.0, 150.0),
-    ("Metal", 120.0, 120.0),
-])
+@pytest.mark.parametrize(
+    "material,precio_base,esperado",
+    [
+        ("Madera", 100.0, 100.0),
+        ("Roble", 150.0, 150.0),
+        ("Metal", 120.0, 120.0),
+    ],
+)
 def test_silla_precios_diferentes_materiales(material, precio_base, esperado):
     silla = Silla(f"Silla {material}", material, precio_base, 4, material)
     assert silla.calcular_precio() == esperado
@@ -585,4 +594,3 @@ El estudiante debe actualizar su repositorio personal con:
     ```
 
 **Nota**: repo [solución al proyecto Muebles](https://github.com/axlcraft/lpa1-taller-poo).
-

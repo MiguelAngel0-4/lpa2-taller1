@@ -30,11 +30,11 @@ def test_suma():
 
 class TestCalculadora:
     """Esta clase será descubierta automáticamente"""
-    
+
     def test_multiplicacion(self):
         """Este método será descubierto automáticamente"""
         assert 2 * 3 == 6
-    
+
     def test_division(self):
         assert 6 / 2 == 3
 
@@ -109,21 +109,21 @@ def test_equality():
 def test_comparaciones_complejas():
     lista_obtenida = [1, 2, 3, 4, 5]
     lista_esperada = [1, 2, 4, 4, 5]  # Diferencia en el índice 2
-    
+
     # pytest muestra una diff detallada automáticamente
     assert lista_obtenida == lista_esperada
 
 def test_diccionarios():
     resultado = {"a": 1, "b": 2, "c": 3}
     esperado = {"a": 1, "b": 999, "c": 3}  # Diferencia en clave 'b'
-    
+
     # pytest muestra diferencias específicas entre diccionarios
     assert resultado == esperado
 
 def test_strings():
     texto_largo = "Este es un texto muy largo con algunas diferencias"
     texto_esperado = "Este es un texto muy LARGO con algunas diferencias"
-    
+
     # pytest resalta diferencias en strings largos
     assert texto_largo == texto_esperado
 ```
@@ -134,12 +134,12 @@ def test_strings():
 def test_con_mensaje_error():
     resultado = calcular_precio(producto="laptop", impuestos=True)
     esperado = 1200
-    
+
     assert resultado == esperado, f"Precio incorrecto. Esperado: {esperado}, Obtenido: {resultado}"
 
 def test_condiciones_complejas():
     usuario = obtener_usuario_por_id(123)
-    
+
     # Múltiples assertions con mensajes claros
     assert usuario is not None, "Usuario no debería ser None"
     assert usuario.activo, "Usuario debería estar activo"
@@ -154,7 +154,7 @@ import pytest
 def test_excepciones_especificas():
     with pytest.raises(ValueError) as exc_info:
         int("no_es_un_numero")
-    
+
     # Puedes verificar el mensaje de error
     assert "invalid literal" in str(exc_info.value).lower()
 
@@ -211,10 +211,10 @@ def base_datos():
     db = Database()
     db.conectar()
     db.inicializar_datos_prueba()
-    
+
     # Proporcionar el recurso al test
     yield db
-    
+
     # Teardown (siempre se ejecuta)
     db.limpiar()
     db.desconectar()
@@ -384,7 +384,7 @@ def test_multiplicacion_combinada(numero, multiplicador):
     "entrada,esperado",
     [
         (0, "cero"),
-        (1, "uno"), 
+        (1, "uno"),
         (5, "cinco"),
         (10, "diez")
     ],
@@ -405,11 +405,11 @@ def usuario(request):
     return Usuario(nombre=request.param["nombre"], edad=request.param["edad"])
 
 @pytest.mark.parametrize(
-    "usuario,esperado", 
+    "usuario,esperado",
     [
         ({"nombre": "Ana", "edad": 25}, True),
         ({"nombre": "Luis", "edad": 17}, False),
-    ], 
+    ],
     indirect=["usuario"]  # Indica que estos parámetros van a la fixture
 )
 def test_usuario_es_mayor_de_edad(usuario, esperado):
@@ -465,11 +465,11 @@ import pytest
 def test_con_mock(mocker):  # Fixture proporcionada por pytest-mock
     # Mock de una función
     mocker.patch("modulo.funcion_externa", return_value=42)
-    
+
     # Mock de un método de clase
     mock_instance = mocker.Mock()
     mocker.patch("modulo.Clase", return_value=mock_instance)
-    
+
     # Verificaciones
     mock_instance.metodo.assert_called_once()
 ```
@@ -501,7 +501,7 @@ import asyncio
 async def test_operacion_asincrona():
     resultado = await operacion_asincrona()
     assert resultado == "esperado"
-    
+
 @pytest.mark.asyncio  
 async def test_multiple_async():
     resultado1, resultado2 = await asyncio.gather(
@@ -649,10 +649,10 @@ def test_procesar_pedido():
     # Setup
     pedido = Pedido(items=["item1", "item2"])
     inventario = Inventario.disponible()
-    
+
     # Action
     resultado = pedido.procesar(inventario)
-    
+
     # Assert
     assert resultado.estado == "completado"
     assert len(resultado.items_procesados) == 2
@@ -690,10 +690,10 @@ from unittest.mock import Mock, patch
 
 def test_envio_email():
     mock_smtp = Mock()
-    
+
     with patch('modulo.email.SMTP', return_value=mock_smtp):
         enviar_email("test@example.com", "Hola")
-        
+
     mock_smtp.enviar.assert_called_once()
 ```
 
@@ -712,9 +712,9 @@ def archivo_temporal():
     archivo = tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt')
     archivo.write("contenido de prueba")
     archivo.close()
-    
+
     yield archivo.name  # Proporciona el path al test
-    
+
     # Teardown
     if os.path.exists(archivo.name):
         os.unlink(archivo.name)
@@ -775,7 +775,7 @@ class SaldoInsuficienteError(Exception):
 class CuentaBancaria:
     def __init__(self, saldo_inicial=0):
         self.saldo = saldo_inicial
-    
+
     def retirar(self, monto):
         if monto > self.saldo:
             raise SaldoInsuficienteError("Saldo insuficiente")
@@ -785,7 +785,7 @@ def test_retiro_saldo_insuficiente():
     cuenta = CuentaBancaria(100)
     with pytest.raises(SaldoInsuficienteError) as exc_info:
         cuenta.retirar(200)
-    
+
     assert "Saldo insuficiente" in str(exc_info.value)
     assert cuenta.saldo == 100  # El saldo no cambió
 ```
@@ -837,4 +837,3 @@ pytest -m slow
 # Ejecutar tests y generar reporte HTML
 pytest --html=report.html
 ```
-

@@ -1,7 +1,7 @@
 import pytest
 
-from models.mueble import Mueble
 from models.categorias.superficies import Superficie
+from models.mueble import Mueble
 
 
 class SuperficiePrueba(Superficie):

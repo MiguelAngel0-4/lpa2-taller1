@@ -1,6 +1,7 @@
-import pytest
 from types import SimpleNamespace
 from unittest.mock import Mock
+
+import pytest
 
 from models.composicion.comedor import Comedor
 from models.concretos.mesa import Mesa
@@ -10,7 +11,14 @@ from models.concretos.sofa import Sofa
 
 def crear_sillas(cantidad, **kwargs):
     return [
-        Silla(f"Silla Comedor {i}", "Madera", "Roble", 50.0, tiene_respaldo=False, **kwargs)
+        Silla(
+            f"Silla Comedor {i}",
+            "Madera",
+            "Roble",
+            50.0,
+            tiene_respaldo=False,
+            **kwargs,
+        )
         for i in range(1, cantidad + 1)
     ]
 
@@ -62,7 +70,9 @@ class TestComedor:
             (5, 484.5),
         ],
     )
-    def test_descuento_a_partir_de_cuatro_sillas(self, mesa_comedor, cantidad, esperado):
+    def test_descuento_a_partir_de_cuatro_sillas(
+        self, mesa_comedor, cantidad, esperado
+    ):
         comedor = Comedor("Comedor", mesa_comedor, crear_sillas(cantidad))
         assert comedor.calcular_precio_total() == pytest.approx(esperado)
 

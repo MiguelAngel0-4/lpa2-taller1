@@ -1,11 +1,12 @@
-import pytest
 from datetime import datetime
 from unittest.mock import Mock, patch
 
-from services.tienda import TiendaMuebles
-from models.concretos.silla import Silla
-from models.concretos.mesa import Mesa
+import pytest
+
 from models.categorias.asientos import Asiento
+from models.concretos.mesa import Mesa
+from models.concretos.silla import Silla
+from services.tienda import TiendaMuebles
 
 
 @pytest.fixture
@@ -62,7 +63,9 @@ class TestAgregarMueble:
         assert tienda_vacia._inventario == []
 
     @pytest.mark.parametrize("precio", [0, -10.0])
-    def test_agregar_mueble_precio_invalido(self, tienda_vacia, crear_mueble_mock, precio):
+    def test_agregar_mueble_precio_invalido(
+        self, tienda_vacia, crear_mueble_mock, precio
+    ):
         resultado = tienda_vacia.agregar_mueble(crear_mueble_mock(precio=precio))
         assert resultado == "Error: El mueble debe tener un precio válido mayor a 0"
         assert tienda_vacia._inventario == []
@@ -178,7 +181,9 @@ class TestDescuentos:
             ("armarios", "Armario"),
         ],
     )
-    def test_aplicar_descuento_normaliza_categoria(self, tienda_vacia, categoria, clave):
+    def test_aplicar_descuento_normaliza_categoria(
+        self, tienda_vacia, categoria, clave
+    ):
         resultado = tienda_vacia.aplicar_descuento(categoria, 10)
         assert resultado == f"Descuento del 10% aplicado a la categoría '{clave}'"
         assert tienda_vacia._descuentos_activos == {clave: 0.1}
@@ -389,12 +394,17 @@ class TestTiendaObtenerMueblesPorTipo:
         assert tienda_vacia.obtener_muebles_por_tipo(Silla) == [silla_basica]
         assert tienda_vacia.obtener_muebles_por_tipo(Mesa) == [mesa_comedor]
 
-    def test_incluye_subclases(self, tienda_vacia, silla_basica, sofa_basico, mesa_comedor):
+    def test_incluye_subclases(
+        self, tienda_vacia, silla_basica, sofa_basico, mesa_comedor
+    ):
         tienda_vacia.agregar_mueble(silla_basica)
         tienda_vacia.agregar_mueble(sofa_basico)
         tienda_vacia.agregar_mueble(mesa_comedor)
 
-        assert tienda_vacia.obtener_muebles_por_tipo(Asiento) == [silla_basica, sofa_basico]
+        assert tienda_vacia.obtener_muebles_por_tipo(Asiento) == [
+            silla_basica,
+            sofa_basico,
+        ]
 
     def test_tipo_sin_coincidencias(self, tienda_vacia, silla_basica):
         tienda_vacia.agregar_mueble(silla_basica)

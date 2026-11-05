@@ -1,8 +1,8 @@
 import pytest
 
-from models.mueble import Mueble
 from models.categorias.superficies import Superficie
 from models.concretos.mesa import Mesa
+from models.mueble import Mueble
 
 
 class TestMesa:

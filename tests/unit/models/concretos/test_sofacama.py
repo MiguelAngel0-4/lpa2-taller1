@@ -1,10 +1,10 @@
 import pytest
 
-from models.mueble import Mueble
 from models.categorias.asientos import Asiento
-from models.concretos.sofa import Sofa
 from models.concretos.cama import Cama
+from models.concretos.sofa import Sofa
 from models.concretos.sofacama import SofaCama
+from models.mueble import Mueble
 
 
 class TestSofaCama:
@@ -88,7 +88,9 @@ class TestSofaCama:
         assert sofa_cama.calcular_precio() == pytest.approx(esperado)
 
     def test_calcular_precio_sin_colchon(self):
-        sofa_cama = SofaCama("Sofá Cama", "Tela", "Beige", 1000.0, incluye_colchon=False)
+        sofa_cama = SofaCama(
+            "Sofá Cama", "Tela", "Beige", 1000.0, incluye_colchon=False
+        )
         assert sofa_cama.calcular_precio() == pytest.approx(1750.0)
 
     def test_propiedades_especificas(self, sofa_cama):
@@ -128,7 +130,9 @@ class TestSofaCama:
         ],
     )
     def test_obtener_capacidad_total(self, tamaño, como_cama):
-        sofa_cama = SofaCama("Sofá Cama", "Tela", "Beige", 1000.0, 3, tamaño_cama=tamaño)
+        sofa_cama = SofaCama(
+            "Sofá Cama", "Tela", "Beige", 1000.0, 3, tamaño_cama=tamaño
+        )
         assert sofa_cama.obtener_capacidad_total() == {
             "como_sofa": 3,
             "como_cama": como_cama,

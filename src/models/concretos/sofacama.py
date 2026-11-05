@@ -3,8 +3,8 @@ Clase SofaCama que implementa herencia múltiple.
 Esta clase hereda tanto de Sofa como de Cama.
 """
 
-from .sofa import Sofa
 from .cama import Cama
+from .sofa import Sofa
 
 
 class SofaCama(Sofa, Cama):

@@ -1,7 +1,7 @@
 import pytest
 
-from models.mueble import Mueble
 from models.concretos.cama import Cama
+from models.mueble import Mueble
 
 
 class TestCama:

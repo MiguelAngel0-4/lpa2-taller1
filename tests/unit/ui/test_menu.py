@@ -4,16 +4,16 @@ Se mockean la tienda, la consola de Rich y los prompts para no depender
 de la entrada del usuario ni de la terminal.
 """
 
-import pytest
 from types import SimpleNamespace
 from unittest.mock import MagicMock, Mock, patch
 
+import pytest
 from rich.panel import Panel
 from rich.table import Table
 
-from ui.menu import MenuTienda
-from services.tienda import TiendaMuebles
 from models.concretos.silla import Silla
+from services.tienda import TiendaMuebles
+from ui.menu import MenuTienda
 
 
 def textos_impresos(console):
@@ -160,7 +160,9 @@ class TestFiltrarPorPrecio:
         menu.filtrar_por_precio_interactivo()
 
         tienda_mock.filtrar_por_precio.assert_called_once_with(0, float("inf"))
-        assert any("No hay muebles en el rango" in t for t in textos_impresos(menu.console))
+        assert any(
+            "No hay muebles en el rango" in t for t in textos_impresos(menu.console)
+        )
 
     def test_con_resultados(self, menu, tienda_mock, prompts, crear_mueble_mock):
         prompts.int_prompt.side_effect = [100, 500]
@@ -246,9 +248,7 @@ class TestRealizarVenta:
             textos_impresos(menu.console)
         )
 
-    def test_venta_exitosa(
-        self, menu, tienda_mock, prompts, crear_mueble_mock, venta
-    ):
+    def test_venta_exitosa(self, menu, tienda_mock, prompts, crear_mueble_mock, venta):
         mueble = crear_mueble_mock()
         tienda_mock._inventario = [mueble]
         tienda_mock.realizar_venta.return_value = venta
@@ -365,7 +365,8 @@ class TestReporte:
         menu.generar_reporte_interactivo()
 
         assert any(
-            t.startswith("[red]Error al guardar:") for t in textos_impresos(menu.console)
+            t.startswith("[red]Error al guardar:")
+            for t in textos_impresos(menu.console)
         )
 
 
@@ -511,9 +512,7 @@ class TestEjecutar:
     def test_keyboard_interrupt_detiene_el_menu(self, menu):
         with (
             patch.object(menu, "mostrar_banner"),
-            patch.object(
-                menu, "mostrar_menu_principal", side_effect=KeyboardInterrupt
-            ),
+            patch.object(menu, "mostrar_menu_principal", side_effect=KeyboardInterrupt),
         ):
             menu.ejecutar()
 

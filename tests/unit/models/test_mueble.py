@@ -1,5 +1,6 @@
-import pytest
 from abc import ABC
+
+import pytest
 
 from models.mueble import Mueble
 

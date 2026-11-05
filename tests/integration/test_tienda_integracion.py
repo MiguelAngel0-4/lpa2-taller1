@@ -3,16 +3,17 @@ Pruebas de integración: objetos reales de models/ trabajando con services/.
 Sin mocks, para verificar que los módulos encajan entre sí.
 """
 
-import pytest
 from unittest.mock import patch
 
+import pytest
+
 import main
-from services.tienda import TiendaMuebles
-from models.concretos.silla import Silla
+from models.composicion.comedor import Comedor
 from models.concretos.mesa import Mesa
+from models.concretos.silla import Silla
 from models.concretos.sofa import Sofa
 from models.concretos.sofacama import SofaCama
-from models.composicion.comedor import Comedor
+from services.tienda import TiendaMuebles
 
 pytestmark = pytest.mark.integration
 

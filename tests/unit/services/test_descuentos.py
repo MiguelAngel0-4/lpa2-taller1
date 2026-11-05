@@ -7,9 +7,9 @@ por eso las pruebas originales (antes xfail) ahora pasan.
 
 import pytest
 
-from services.tienda import TiendaMuebles
-from models.concretos.silla import Silla
 from models.concretos.mesa import Mesa
+from models.concretos.silla import Silla
+from services.tienda import TiendaMuebles
 
 
 @pytest.fixture

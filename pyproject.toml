@@ -1,0 +1,56 @@
+[project]
+name = "tienda-muebles"
+version = "0.1.0"
+description = "Tienda de Muebles: taller de POO y pruebas con pytest (LPA2)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "rich",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "bandit[toml]",
+    "pre-commit",
+]
+
+# ---------------------------------------------------------------------------
+# Ruff: linter y formateador
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+# El código se importa como paquetes de primer nivel (models, services, ui)
+# porque pytest.ini agrega "src" y "tests" al pythonpath.
+src = ["src", "tests"]
+extend-exclude = ["htmlcov", ".pytest_cache", "refs"]
+
+[tool.ruff.lint]
+# E/W: pycodestyle, F: Pyflakes, I: isort, UP: pyupgrade, B: flake8-bugbear
+select = ["E", "W", "F", "I", "UP", "B"]
+# E501 (línea larga) lo resuelve ruff-format; los textos largos de la UI
+# y docstrings se permiten.
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["models", "services", "ui", "fixtures"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# ---------------------------------------------------------------------------
+# Bandit: análisis de seguridad estática (solo código fuente)
+# ---------------------------------------------------------------------------
+[tool.bandit]
+exclude_dirs = ["tests", ".venv", "htmlcov"]
+
+# Nota: la configuración de pytest vive en pytest.ini y la de cobertura en
+# .coveragerc; pytest.ini tiene prioridad sobre [tool.pytest.ini_options],
+# por eso no se duplica aquí.

@@ -1,4 +1,3 @@
-from typing import List
 from ..concretos.mesa import Mesa
 from ..concretos.silla import Silla
 
@@ -13,7 +12,7 @@ class Comedor:
 	Clase que representa un conjunto de comedor compuesto por una mesa y varias sillas.
 	"""
 
-    def __init__(self, mesa: Mesa, sillas: List[Silla] = None):
+    def __init__(self, mesa: Mesa, sillas: list[Silla] = None):
         self.mesa = mesa
         self.sillas = sillas if sillas is not None else []
 

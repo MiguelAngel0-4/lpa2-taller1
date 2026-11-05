@@ -1,6 +1,6 @@
 [run]
 source = src
-omit = 
+omit =
     */__pycache__/*
     */tests/*
     */venv/*
@@ -13,6 +13,7 @@ exclude_lines =
     raise AssertionError
     raise NotImplementedError
     if __name__ == .__main__.:
+    if TYPE_CHECKING:
     pass
 
 fail_under = 80

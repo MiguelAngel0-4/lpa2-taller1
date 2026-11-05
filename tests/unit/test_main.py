@@ -3,8 +3,9 @@ Pruebas del punto de entrada src/main.py.
 Se mockean print, input y el menú para que no haya interacción real.
 """
 
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
 
 import main
 from services.tienda import TiendaMuebles

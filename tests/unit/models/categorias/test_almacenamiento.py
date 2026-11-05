@@ -1,7 +1,7 @@
 import pytest
 
-from models.mueble import Mueble
 from models.categorias.almacenamiento import Almacenamiento
+from models.mueble import Mueble
 
 
 class AlmacenamientoPrueba(Almacenamiento):

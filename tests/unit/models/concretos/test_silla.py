@@ -1,8 +1,8 @@
 import pytest
 
-from models.mueble import Mueble
 from models.categorias.asientos import Asiento
 from models.concretos.silla import Silla
+from models.mueble import Mueble
 
 
 class TestSilla:

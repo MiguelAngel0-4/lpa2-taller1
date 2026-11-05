@@ -1,0 +1,42 @@
+repos:
+  # Validaciones generales de archivos
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        # Conserva los saltos de línea de Markdown (dos espacios al final)
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: check-added-large-files
+
+  # Ruff para linter y formato (usa la configuración de pyproject.toml)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.3
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # Bandit para análisis de seguridad estática (solo src/)
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.9.4
+    hooks:
+      - id: bandit
+        # -ll: solo falla con hallazgos de severidad media o alta
+        args: ["-c", "pyproject.toml", "-ll"]
+        additional_dependencies: ["bandit[toml]"]
+        files: ^src/
+
+  # Pruebas con pytest (usa pytest.ini y el entorno virtual activo)
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: python -m pytest -q --no-cov
+        language: system
+        types: [python]
+        pass_filenames: false

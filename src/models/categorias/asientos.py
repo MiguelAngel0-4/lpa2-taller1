@@ -4,6 +4,7 @@ Esta clase agrupa las características comunes de sillas, sillones y sofás.
 """
 
 from abc import ABC, abstractmethod
+
 from models.mueble import Mueble
 
 

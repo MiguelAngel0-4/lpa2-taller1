@@ -3,10 +3,11 @@ Clase Comedor que implementa composición.
 Un comedor está compuesto por una mesa y varias sillas.
 """
 
-# Importar List para anotaciones de tipo
-from typing import List
-# from ..concretos.mesa import Mesa
-# from ..concretos.silla import Silla
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..concretos.mesa import Mesa
+    from ..concretos.silla import Silla
 
 
 class Comedor:
@@ -24,7 +25,7 @@ class Comedor:
     - Abstracción: Simplifica la gestión de múltiples muebles
     """
 
-    def __init__(self, nombre: str, mesa: "Mesa", sillas: List["Silla"] = None):
+    def __init__(self, nombre: str, mesa: "Mesa", sillas: list["Silla"] = None):
         """
         Constructor del comedor.
         Args:
@@ -45,7 +46,7 @@ class Comedor:
         return self._mesa
 
     @property
-    def sillas(self) -> List["Silla"]:
+    def sillas(self) -> list["Silla"]:
         return self._sillas.copy()
 
     def agregar_silla(self, silla: "Silla") -> str:
@@ -168,7 +169,7 @@ class Comedor:
         """
         # Si la mesa tiene un atributo 'capacidad_personas', úsalo
         if hasattr(self._mesa, "capacidad_personas"):
-            return getattr(self._mesa, "capacidad_personas")
+            return self._mesa.capacidad_personas
         # Valor por defecto
         return 6
 

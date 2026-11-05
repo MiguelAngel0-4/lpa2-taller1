@@ -4,18 +4,18 @@ Fixtures compartidas por todas las pruebas unitarias.
 
 import pytest
 
-from models.concretos.silla import Silla
-from models.concretos.mesa import Mesa
-from models.concretos.sofa import Sofa
-from models.concretos.cama import Cama
 from models.composicion.comedor import Comedor
+from models.concretos.cama import Cama
+from models.concretos.mesa import Mesa
+from models.concretos.silla import Silla
+from models.concretos.sofa import Sofa
 from services.tienda import TiendaMuebles
 from tests.fixtures.datos_muebles import (
+    CAMA_BASICA,
+    MESA_COMEDOR,
     SILLA_BASICA,
     SILLA_OFICINA,
-    MESA_COMEDOR,
     SOFA_BASICO,
-    CAMA_BASICA,
 )
 
 

@@ -3,6 +3,7 @@ Clase abstracta para muebles para superficies de trabajo o del hogar.
 """
 
 from abc import ABC, abstractmethod
+
 from models.mueble import Mueble
 
 

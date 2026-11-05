@@ -3,8 +3,9 @@ Pruebas del Comedor simple de models/concretos/comedor.py.
 Se usan mocks para aislar al comedor de la lógica de Mesa y Silla.
 """
 
-import pytest
 from unittest.mock import Mock
+
+import pytest
 
 from models.concretos.comedor import Comedor
 from models.concretos.mesa import Mesa

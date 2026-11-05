@@ -1,7 +1,7 @@
 import pytest
 
-from models.mueble import Mueble
 from models.categorias.asientos import Asiento
+from models.mueble import Mueble
 
 
 class AsientoPrueba(Asiento):
